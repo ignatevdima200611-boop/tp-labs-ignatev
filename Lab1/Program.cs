@@ -33,5 +33,28 @@ class Program
             }
         }
 
+        static void Task1()
+        {
+            Console.WriteLine("Задание 1: ");
+
+        }
+
+        static void Task2()
+        {
+            Console.WriteLine("Задание 2: ");
+
+        }
+
+        static void Task3()
+        {
+            Console.WriteLine("Задание 3: ");
+
+        }
+
+        static void Task4()
+        {
+            Console.WriteLine("Задание 4: ");
+
+        }
     }
 }
