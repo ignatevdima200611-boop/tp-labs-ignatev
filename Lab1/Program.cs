@@ -61,6 +61,33 @@ class Program
         {
             Console.WriteLine("Задание 2: ");
 
+            Console.Write("Введите n для вычисления последовательности Фибоначчи:");
+
+            if (!int.TryParse(Console.ReadLine(), out int n) || n < 0)
+            {
+                Console.WriteLine("Ошибка: нужно целое число больше 0.");
+                return;
+            }
+
+            long first_value = 0;
+            long second_value = 1;
+
+            Console.Write(first_value);
+
+            if (n >= 1)
+            {
+                Console.Write($", {second_value}");
+            }
+
+            for (int i = 2; first_value <= n; i++)
+            {
+                long third_value = first_value + second_value;
+                Console.Write($", {third_value}");
+                first_value = second_value;
+                second_value = third_value;
+            }
+            Console.WriteLine();
+
         }
 
         static void Task3()
