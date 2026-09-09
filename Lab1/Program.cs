@@ -128,6 +128,39 @@ class Program
         {
             Console.WriteLine("Задание 4: ");
 
+            Console.Write("Введите x:");
+
+            if (!double.TryParse(Console.ReadLine(), out double x))
+            {
+                Console.WriteLine("Ошибка: число введенно не корректно.");
+                return;
+            }
+
+            double epsilon = 1e-6;
+
+            double sum = 0;
+            double term = 1;
+            int n = 0;
+            int count = 0;
+
+            while (Math.Abs(term) > epsilon)
+            {
+                sum += term;
+                count++;
+                n++;
+
+                term *= x / n;
+            }
+
+            sum += term;
+            count++;
+
+            double mathexp = Math.Exp(x);
+
+            Console.WriteLine($"Сумма ряда Тейлора: {sum}");
+            Console.WriteLine($"Библиотечное значение: {mathexp}");
+            Console.WriteLine($"Разница: {Math.Abs(sum - mathexp)}");
+            Console.WriteLine($"Количество членов: {count}");
         }
     }
 }
