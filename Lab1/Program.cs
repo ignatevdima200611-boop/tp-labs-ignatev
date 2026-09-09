@@ -94,6 +94,34 @@ class Program
         {
             Console.WriteLine("Задание 3: ");
 
+            Console.Write("Введите x для решения функции:");
+
+            if (!int.TryParse(Console.ReadLine(), out int x))
+            {
+                Console.WriteLine("Ошибка: число введенно не корректно.");
+                return;
+            }
+
+            if (x == 5)
+            {
+                Console.WriteLine("Ошибка: деление на ноль (x = 5).");
+                return;
+            }
+
+            if ((x / (x - 5)) <= 0)
+            {
+                Console.WriteLine("Ошибка: под логарифмом отрицательное число или ноль");
+                return;
+            }
+
+            if ((Math.Log(x / (x - 5))) < 0)
+            {
+                Console.WriteLine("Ошибка: под корнем отрицательное число (ln(x/(x-5))");
+            }
+
+            double a = Math.Sqrt(Math.Log(x/(x-5))) + (x + Math.Exp(x-1)) - Math.Atan(x/2);
+
+            Console.WriteLine(a);
         }
 
         static void Task4()
