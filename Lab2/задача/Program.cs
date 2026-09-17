@@ -21,6 +21,11 @@ public abstract class Shape : IMovable
         _y += dy;
     }
 
+    public override string ToString()
+    {
+        return $"{GetType().Name} в({X}, {Y}): S ={Area():F2}, P ={Perimeter():F2}";
+    }
+
     public abstract double Area();
     public abstract double Perimeter();
     public abstract void Scale(double factor);
@@ -41,6 +46,10 @@ public class Circle : Shape
     {
         if (factor <= 0) throw new ArgumentOutOfRangeException();
         _radius *= factor;
+    }
+    public override string ToString()
+    {
+        return $"Круг R={_radius} в ({X}, {Y}): S={Area():F2}, P={Perimeter():F2}";
     }
 }
 
@@ -96,5 +105,9 @@ public class Triangle : Shape
         _a *= factor;
         _b *= factor;
         _c *= factor;
+    }
+    public override string ToString()
+    {
+        return $"Треугольник {_a}x{_b}x{_c} в ({X}, {Y}): S={Area():F2}, P={Perimeter():F2}";
     }
 }
