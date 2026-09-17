@@ -2,33 +2,48 @@
 {
     public abstract double Area();
     public abstract double Perimeter();
+    public abstract void Scale(double factor);
 }
 
 public class Circle : Shape
 {
-    public double Radius { get; }
+    private double _radius;
+    public double Radius => _radius;
     public Circle(double radius)
     {
         if (radius <= 0) throw new ArgumentOutOfRangeException(nameof(radius));
-        Radius = radius;
+        _radius = radius;
     }
-    public override double Area() => Math.PI * Radius * Radius;
-    public override double Perimeter() => 2 * Math.PI * Radius;
+    public override double Area() => Math.PI * _radius * _radius;
+    public override double Perimeter() => 2 * Math.PI * _radius;
+    public override void Scale(double factor)
+    {
+        if (factor <= 0) throw new ArgumentOutOfRangeException();
+        _radius *= factor;
+    }
 }
 
 public class Rectangle : Shape
 {
-    public double Width { get; }
-    public double Height { get; }
+    private double _width;
+    private double _height;
+    public double Width => _width;
+    public double Height => _height;
     public Rectangle(double width, double height)
     {
         if (width <= 0 || height <= 0) throw new ArgumentOutOfRangeException();
-        Width = width;
-        Height = height;
+        _width = width;
+        _height = height;
     }
 
-    public  override double Area() => Width * Height;
-    public override double Perimeter() => 2 * (Width + Height);
+    public  override double Area() => _width * _height;
+    public override double Perimeter() => 2 * (_width + _height);
+    public override void Scale(double factor)
+    {
+        if (factor <= 0) throw new ArgumentOutOfRangeException();
+        _width *= factor;
+        _height *= factor;
+    }
 }
 
 public class Square : Rectangle
@@ -37,20 +52,28 @@ public class Square : Rectangle
 }
 public class Triangle : Shape
 {
-    public double A { get; }
-    public double B { get; }
-    public double C { get; }
+    private double _a, _b, _c;
+    public double A => _a;
+    public double B => _b;
+    public double C => _c;
+
     public Triangle(double a, double b, double c)
     {
         if (a <= 0 || b <= 0 || c <= 0) throw new ArgumentOutOfRangeException();
-        A = a; B = b; C = c;
         if ((a + b) <= c || (a + c) <= b || (b + c) <= a) throw new ArgumentException("Треугольника с такими сторонами не существует");
+        _a = a; _b = b; _c = c;
     }
     public override double Area() 
     {
-        double p = A + B + C;
-        return Math.Sqrt(p * (p - A) * (p - B) * (p - C));
+        double p = (_a + _b + _c) /2;
+        return Math.Sqrt(p * (p - _a) * (p - _b) * (p - _c));
     }
-    public override double Perimeter() => A + B + C;
-    
+    public override double Perimeter() => _a + _b + _c;
+    public override void Scale(double factor)
+    {
+        if (factor <= 0) throw new ArgumentOutOfRangeException();
+        _a *= factor;
+        _b *= factor;
+        _c *= factor;
+    }
 }
