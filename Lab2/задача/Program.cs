@@ -1,4 +1,5 @@
-﻿public interface IMovable
+﻿using System.Collections.Generic;
+public interface IMovable
 {
     double X { get; }
     double Y { get; }
@@ -109,5 +110,31 @@ public class Triangle : Shape
     public override string ToString()
     {
         return $"Треугольник {_a}x{_b}x{_c} в ({X}, {Y}): S={Area():F2}, P={Perimeter():F2}";
+    }
+}
+class Program
+{
+    static void Main()
+    {
+        List<Shape> shapes = new()
+        {
+            new Circle(5, 0, 0),
+            new Rectangle(4, 6, 10, 10),
+            new Square(3, 20, 20),
+            new Triangle(3, 4, 5, 30, 30),
+            new Circle(2, 50, 50),
+        };
+
+        foreach (Shape s in shapes)
+        {
+            Console.WriteLine(s);
+            Console.WriteLine($"  Площадь: {s.Area():F2}");
+            Console.WriteLine($"  Периметр: {s.Perimeter():F2}");
+            s.Move(10, 10);
+            Console.WriteLine($"  После перемещения(10,10): {s}");
+            s.Scale(2);
+            Console.WriteLine($"  После масштабирования(2): {s}");
+            Console.WriteLine();
+        }
     }
 }
