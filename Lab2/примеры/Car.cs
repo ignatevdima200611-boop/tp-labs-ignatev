@@ -26,6 +26,7 @@ public class Car
     {
         double maxDistance = _fuel / FuelConsumption * 100;
         double actual = Math.Min(distanceKm, maxDistance);
+        _fuel -= actual * FuelConsumption / 100;
         Mileage += actual;
         return actual;
     }
