@@ -1,5 +1,26 @@
-﻿public abstract class Shape
+﻿public interface IMovable
 {
+    double X { get; }
+    double Y { get; }
+    void Move(double dx, double dy);
+}
+public abstract class Shape : IMovable
+{
+    private double _x;
+    private double _y;
+    public double X => _x;
+    public double Y => _y;
+    protected Shape(double x = 0, double y = 0)
+    {
+        _x = x;
+        _y = y;
+    }
+    public void Move(double dx, double dy)
+    {
+        _x += dx;
+        _y += dy;
+    }
+
     public abstract double Area();
     public abstract double Perimeter();
     public abstract void Scale(double factor);
@@ -9,7 +30,7 @@ public class Circle : Shape
 {
     private double _radius;
     public double Radius => _radius;
-    public Circle(double radius)
+    public Circle(double radius, double x = 0, double y = 0) :base(x, y)
     {
         if (radius <= 0) throw new ArgumentOutOfRangeException(nameof(radius));
         _radius = radius;
@@ -29,14 +50,14 @@ public class Rectangle : Shape
     private double _height;
     public double Width => _width;
     public double Height => _height;
-    public Rectangle(double width, double height)
+    public Rectangle(double width, double height, double x = 0, double y = 0) : base(x, y)
     {
         if (width <= 0 || height <= 0) throw new ArgumentOutOfRangeException();
         _width = width;
         _height = height;
     }
 
-    public  override double Area() => _width * _height;
+    public override double Area() => _width * _height;
     public override double Perimeter() => 2 * (_width + _height);
     public override void Scale(double factor)
     {
@@ -48,7 +69,7 @@ public class Rectangle : Shape
 
 public class Square : Rectangle
 {
-    public Square(double side) : base(side, side) { }
+    public Square(double side, double x = 0, double y = 0) : base(side, side, x, y) { }
 }
 public class Triangle : Shape
 {
@@ -57,7 +78,7 @@ public class Triangle : Shape
     public double B => _b;
     public double C => _c;
 
-    public Triangle(double a, double b, double c)
+    public Triangle(double a, double b, double c, double x = 0, double y = 0) : base(x, y)
     {
         if (a <= 0 || b <= 0 || c <= 0) throw new ArgumentOutOfRangeException();
         if ((a + b) <= c || (a + c) <= b || (b + c) <= a) throw new ArgumentException("Треугольника с такими сторонами не существует");
