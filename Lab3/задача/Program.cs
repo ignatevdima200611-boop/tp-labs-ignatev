@@ -29,3 +29,49 @@ public class FileSearcher
         return result;
     }
 }
+
+
+class Program
+{
+    static void Main()
+    {
+        Console.Write("Введите путь к папке: ");
+        string folder = Console.ReadLine()!;
+
+        Console.Write("Введите ключевое слово: ");
+        string keyword = Console.ReadLine()!;
+
+        var searcher = new FileSearcher();
+
+        try
+        {
+            var results = searcher.Search(folder, keyword);
+
+            if (results.Count == 0)
+            {
+                Console.WriteLine("Файлы не найдены!");
+                return;
+            }
+
+            Console.WriteLine($"Найдено файлов: {results.Count}");
+            Console.WriteLine();
+
+            foreach (var f in results)
+            {
+                Console.WriteLine($"{f.Name} - {f.Length} байт - {f.LastWriteTime}");
+            }
+        }
+        catch (FileNotFoundException ex)
+        {
+            Console.WriteLine($"Файл не найден: {ex.Message}");
+        }
+        catch (IOException ex)
+        {
+            Console.WriteLine($"Ошибка ввода-вывода: {ex.Message}");
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"Ошибка ввода: {ex.Message}");
+        }
+    }
+}
