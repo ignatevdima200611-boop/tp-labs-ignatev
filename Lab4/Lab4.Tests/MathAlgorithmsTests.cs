@@ -26,10 +26,10 @@ public class MathAlgorithmsTests
         => Assert.Throws<ArgumentOutOfRangeException>(() => MathAlgorithms.Factorial(n));
 
     [Fact]
-    public void Fibonacci_First6_AreCorrent()
+    public void Fibonacci_First6_AreCorrect()
     {
         var seq = MathAlgorithms.Fibonacci(6);
-        Assert.Equal(new long[] { 0, 1, 1, 2,  3, 5 }, seq);
+        Assert.Equal(new long[] { 0, 1, 1, 2, 3, 5 }, seq);
     }
 
     [Fact]
@@ -38,10 +38,10 @@ public class MathAlgorithmsTests
 
     [Theory]
     [InlineData(0)]
-    [InlineData(0.5)]
-    [InlineData(Math.PI / 2)]
-    [InlineData(-1.2)]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(-1)]
 
-    public void SinTaylor_MatchesMathSin(double x)
-        => Assert.Equal(Math.Sin(x), MathAlgorithms.SinTaylor(x), 1e-5);
+    public void ExpTaylor_MatchesMathExp(double x)
+        => Assert.Equal(Math.Exp(x), MathAlgorithms.ExpTaylor(x), 1e-5);
 }
