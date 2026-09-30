@@ -42,7 +42,7 @@ public class Circle : Shape
         if (radius <= 0) throw new ArgumentOutOfRangeException(nameof(radius));
         _radius = radius;
     }
-    public override double Area() => 0;
+    public override double Area() => Math.PI * _radius * _radius;
     public override double Perimeter() => 2 * Math.PI * _radius;
     public override void Scale(double factor)
     {
