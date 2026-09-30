@@ -9,7 +9,7 @@ public static class MathAlgorithms
         if (n > 20)
             throw new ArgumentOutOfRangeException(nameof(n), "переполнен long");
 
-        long result = 1;
+        long result = 0;
         for (int i = 2; i <= n; i++)
             result *= i;
         return result;
