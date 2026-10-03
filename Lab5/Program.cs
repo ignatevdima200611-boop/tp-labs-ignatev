@@ -1,25 +1,29 @@
 ﻿using System.Diagnostics;
 
-int counter = 0;
-
-object lockObj = new object();
-
-var threads = Enumerable.Range(0, 4)
-    .Select(_ => new Thread(() =>
-    {
-        for (int i = 0; i < 100_000; i++)
-            lock (lockObj)
-            {
-                counter++;
-            }
-    }))
-    .ToList();
+const int N = 3_000_000;
 
 var sw = Stopwatch.StartNew();
-threads.ForEach(t => t.Start());
-threads.ForEach(t => t.Join());
+int seq = 0;
+for (int i = 2; i < N; i++)
+    if (IsPrime(i)) seq++;
 sw.Stop();
+Console.WriteLine($"Последовательно: {seq} простых, {sw.ElapsedMilliseconds} мс");
 
-Console.WriteLine($"Получилось: {counter}");
-Console.WriteLine("Ожидалось: 400000");
-Console.WriteLine($"Время:  {sw.ElapsedMilliseconds} мс");
+sw.Restart();
+int par = 0;
+Parallel.For(2, N, i =>
+{
+    if (IsPrime(i)) Interlocked.Increment(ref par);
+});
+sw.Stop();
+Console.WriteLine($"Параллельно:    {par} простых, {sw.ElapsedMilliseconds} мс");
+Console.WriteLine($"Ядер доступно:  {Environment.ProcessorCount}");
+Console.WriteLine($"Совпадает:  {seq == par}");
+
+static bool IsPrime(int n)
+{
+    if (n < 2) return false;
+    for (int d = 2; d * d <= n; d++)
+        if (n % d == 0) return false;
+    return true;
+}
