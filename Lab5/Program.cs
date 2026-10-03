@@ -2,11 +2,16 @@
 
 int counter = 0;
 
+object lockObj = new object();
+
 var threads = Enumerable.Range(0, 4)
     .Select(_ => new Thread(() =>
     {
         for (int i = 0; i < 100_000; i++)
-            counter++;
+            lock (lockObj)
+            {
+                counter++;
+            }
     }))
     .ToList();
 
