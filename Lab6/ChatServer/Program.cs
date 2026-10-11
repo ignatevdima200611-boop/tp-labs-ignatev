@@ -59,6 +59,14 @@ async Task HandleClientAsync(TcpClient client)
         while ((line = await reader.ReadLineAsync()) != null)
         {
             if (line == "/exit") break;
+
+            if (line == "/list")
+            {
+                List<string> nicksSnapshot;
+                lock (lockObj) nicksSnapshot = nicks.ToList();
+                await writer.WriteLineAsync($"*** Подключены: {string.Join(", ", nicksSnapshot)} ***");
+                continue;
+            }
             await BroadcastAsync($"[{DateTime.Now:HH:mm:ss}] {nick}: {line}");
         }
     }

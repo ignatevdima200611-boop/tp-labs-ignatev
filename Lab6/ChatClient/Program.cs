@@ -25,7 +25,7 @@ while (true)
     }
     else if (response == "NICK_TAKEN")
     {
-        Console.WriteLine("Этот ник уже занят! введите дрругой.");
+        Console.WriteLine("Этот ник уже занят! введите другой.");
     }
 }
 
@@ -41,7 +41,7 @@ _ = Task.Run(async () =>
     Console.WriteLine("Соединение с сервером потеряно.");
 });
 
-Console.WriteLine("Подключеною Пишите сообщения, /exit - выход.");
+Console.WriteLine("Подключено. Пишите сообщения, /exit - выход., /list - список пользователей");
 while (true)
 {
     string? msg = Console.ReadLine();
