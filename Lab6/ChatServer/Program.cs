@@ -4,6 +4,7 @@ using System.Net.Sockets;
 const int Port = 5555;
 var clients = new List<StreamWriter>();
 var lockObj = new Object();
+var nicks = new HashSet<string>();
 
 var listener = new TcpListener(IPAddress.Any, Port);
 listener.Start();
@@ -21,10 +22,34 @@ async Task HandleClientAsync(TcpClient client)
     var reader = new StreamReader(stream);
     var writer = new StreamWriter(stream) { AutoFlush = true };
 
-    string? nick = await reader.ReadLineAsync();
-    if (string.IsNullOrWhiteSpace(nick)) { client.Close(); return; }
+    string? nick;
+    while (true)
+    {
+        nick = await reader.ReadLineAsync();
+        if (string.IsNullOrWhiteSpace(nick))
+        {
+            client.Close();
+            return;
+        }
+        bool taken;
+        lock (lockObj)
+        {
+            taken = nicks.Contains(nick);
+            if (!taken)
+                nicks.Add(nick);
+        }
+        if (taken)
+        {
+            await writer.WriteLineAsync("NICK_TAKEN");
+            continue;
+        }
+        break;
+    }
+
+    await writer.WriteLineAsync("OK");
 
     lock (lockObj) clients.Add(writer);
+
     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {nick} подключился ({endpoint})");
     await BroadcastAsync($"*** {nick} вошел в чат ***");
 

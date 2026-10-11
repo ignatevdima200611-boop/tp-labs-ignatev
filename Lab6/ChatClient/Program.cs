@@ -2,8 +2,6 @@
 
 Console.Write("Адрес сервера (Enter = localhost): ");
 string host = Console.ReadLine() is { Length: > 0 } h ? h : "localhost";
-Console.Write("Ваш ник: ");
-string nick = Console.ReadLine() ?? "anon";
 
 using var client = new TcpClient();
 await client.ConnectAsync(host, 5555);
@@ -11,7 +9,25 @@ var stream = client.GetStream();
 var reader =  new StreamReader(stream);
 var writer = new StreamWriter(stream) { AutoFlush = true };
 
-await writer.WriteLineAsync(nick);
+string nick;
+while (true)
+{
+    Console.Write("Ваш ник: ");
+    nick = Console.ReadLine() ?? "anon";
+
+    await writer.WriteLineAsync(nick);
+    string? response = await reader.ReadLineAsync();
+
+    if (response == "OK")
+    {
+        Console.WriteLine("Ник универсален!");
+        break;
+    }
+    else if (response == "NICK_TAKEN")
+    {
+        Console.WriteLine("Этот ник уже занят! введите дрругой.");
+    }
+}
 
 _ = Task.Run(async () =>
 {
