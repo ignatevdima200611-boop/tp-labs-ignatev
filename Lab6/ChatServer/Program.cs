@@ -2,13 +2,13 @@
 using System.Net.Sockets;
 using System.IO;
 
-const int Port = 5555;
+int port = args.Length > 0 && int.TryParse(args[0], out int p) ? p : 5555;
 var clients = new Dictionary <string,StreamWriter>();
 var lockObj = new Object();  
 
-var listener = new TcpListener(IPAddress.Any, Port);
+var listener = new TcpListener(IPAddress.Any, port);
 listener.Start();
-Console.WriteLine($"Сервер запущен на порту {Port}. Ctrl+C - остановка.");
+Console.WriteLine($"Сервер запущен на порту {port}. Ctrl+C - остановка.");
 
 while (true)
 {
@@ -91,7 +91,7 @@ async Task HandleClientAsync(TcpClient client)
                 {
                     await targetWriter.WriteLineAsync($"[Личное сообщение от {nick}] {message}");
                     await writer.WriteLineAsync($"[Личное сообщение к {targetNick}] {message}");
-                    Log($"[Личное собщение] {nick} - {targetNick}: {message}");
+                    Log($"[Личное сообщение] {nick} - {targetNick}: {message}");
                 }
                 continue;
             }

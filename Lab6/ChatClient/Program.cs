@@ -6,7 +6,8 @@ string host = Console.ReadLine() is { Length: > 0 } h ? h : "localhost";
 using var client = new TcpClient();
 try
 {
-    await client.ConnectAsync(host, 5555);
+    int port = args.Length > 0 && int.TryParse(args[0], out int p) ? p : 5555;
+    await client.ConnectAsync(host, port);
 }
 catch (SocketException)
 {
