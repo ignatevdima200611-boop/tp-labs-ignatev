@@ -99,7 +99,10 @@ async Task HandleClientAsync(TcpClient client)
             Log($"{nick}: {line}");
         }
     }
-    catch (IOException) { /* клиент оборвал соединение */ }
+    catch (Exception ex) when (ex is IOException or ObjectDisposedException or SocketException) 
+    { 
+        //клиент оборвал соединение 
+    }
     finally
     {
         lock (lockObj) clients.Remove(nick);
@@ -123,6 +126,9 @@ async Task BroadcastAsync(string message)
     foreach (var w in snapshot)
     {
         try { await w.WriteLineAsync(message); }
-        catch (IOException) { /* отвалившийся клиент удалится в своей задаче */}
+        catch (Exception ex) when (ex is IOException or ObjectDisposedException or SocketException) 
+        { 
+           
+        }
     }
 }

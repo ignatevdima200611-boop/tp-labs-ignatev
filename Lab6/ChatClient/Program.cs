@@ -4,7 +4,15 @@ Console.Write("Адрес сервера (Enter = localhost): ");
 string host = Console.ReadLine() is { Length: > 0 } h ? h : "localhost";
 
 using var client = new TcpClient();
-await client.ConnectAsync(host, 5555);
+try
+{
+    await client.ConnectAsync(host, 5555);
+}
+catch (SocketException)
+{
+    Console.WriteLine("Сервер недоступен Проверьте адрес и порт.");
+    return;
+}
 var stream = client.GetStream();
 var reader =  new StreamReader(stream);
 var writer = new StreamWriter(stream) { AutoFlush = true };
@@ -37,7 +45,7 @@ _ = Task.Run(async () =>
         while ((line = await reader.ReadLineAsync()) != null)
             Console.WriteLine(line);
     }
-    catch (IOException) { }
+    catch (Exception ex) when (ex is IOException or ObjectDisposedException or SocketException) { }
     Console.WriteLine("Соединение с сервером потеряно.");
 });
 
