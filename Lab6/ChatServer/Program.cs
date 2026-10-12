@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 const int Port = 5555;
 var clients = new Dictionary <string,StreamWriter>();
@@ -47,7 +48,7 @@ async Task HandleClientAsync(TcpClient client)
 
     await writer.WriteLineAsync("OK");
 
-    Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {nick} подключился ({endpoint})");
+    Log($"{nick} подключился ({endpoint})");
     await BroadcastAsync($"*** {nick} вошел в чат ***");
 
     try
@@ -62,6 +63,7 @@ async Task HandleClientAsync(TcpClient client)
                 List<string> nicksSnapshot;
                 lock (lockObj) nicksSnapshot = clients.Keys.ToList();
                 await writer.WriteLineAsync($"*** Подключены: {string.Join(", ", nicksSnapshot)} ***");
+                Log($"{nick} запросил /list");
                 continue;
             }
 
@@ -89,10 +91,12 @@ async Task HandleClientAsync(TcpClient client)
                 {
                     await targetWriter.WriteLineAsync($"[Личное сообщение от {nick}] {message}");
                     await writer.WriteLineAsync($"[Личное сообщение к {targetNick}] {message}");
+                    Log($"[Личное собщение] {nick} - {targetNick}: {message}");
                 }
                 continue;
             }
             await BroadcastAsync($"[{DateTime.Now:HH:mm:ss}] {nick}: {line}");
+            Log($"{nick}: {line}");
         }
     }
     catch (IOException) { /* клиент оборвал соединение */ }
@@ -100,11 +104,17 @@ async Task HandleClientAsync(TcpClient client)
     {
         lock (lockObj) clients.Remove(nick);
         client.Close();
-        Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {nick} отключился");
+        Log($"{nick} отключился");
         await BroadcastAsync($"*** {nick} покинул чат ***");
     }
 }
 
+void Log(string message)
+{
+    string logLine = $"[{DateTime.Now:HH:mm:ss}] {message}";
+    Console.WriteLine(logLine);
+    File.AppendAllText("chat.log", logLine + Environment.NewLine);
+}
 async Task BroadcastAsync(string message)
 {
     List<StreamWriter> snapshot;
