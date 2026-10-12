@@ -2,9 +2,8 @@
 using System.Net.Sockets;
 
 const int Port = 5555;
-var clients = new List<StreamWriter>();
-var lockObj = new Object();
-var nicks = new HashSet<string>();
+var clients = new Dictionary <string,StreamWriter>();
+var lockObj = new Object();  
 
 var listener = new TcpListener(IPAddress.Any, Port);
 listener.Start();
@@ -34,9 +33,9 @@ async Task HandleClientAsync(TcpClient client)
         bool taken;
         lock (lockObj)
         {
-            taken = nicks.Contains(nick);
+            taken = clients.ContainsKey(nick);
             if (!taken)
-                nicks.Add(nick);
+                clients[nick] = writer;
         }
         if (taken)
         {
@@ -47,8 +46,6 @@ async Task HandleClientAsync(TcpClient client)
     }
 
     await writer.WriteLineAsync("OK");
-
-    lock (lockObj) clients.Add(writer);
 
     Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {nick} подключился ({endpoint})");
     await BroadcastAsync($"*** {nick} вошел в чат ***");
@@ -63,8 +60,36 @@ async Task HandleClientAsync(TcpClient client)
             if (line == "/list")
             {
                 List<string> nicksSnapshot;
-                lock (lockObj) nicksSnapshot = nicks.ToList();
+                lock (lockObj) nicksSnapshot = clients.Keys.ToList();
                 await writer.WriteLineAsync($"*** Подключены: {string.Join(", ", nicksSnapshot)} ***");
+                continue;
+            }
+
+            if (line.StartsWith("/w "))
+            {
+                var parts = line.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 3)
+                {
+                    await writer.WriteLineAsync("*** Использование: /w ник текст ***");
+                    continue;
+                }
+                string targetNick = parts[1];
+                string message = parts[2];
+
+                StreamWriter? targetWriter = null;
+                lock (lockObj)
+                {
+                    clients.TryGetValue(targetNick, out targetWriter);
+                }
+                if (targetWriter == null) 
+                {
+                    await writer.WriteLineAsync($"*** Пользователь {targetNick} не найден ***");
+                }
+                else
+                {
+                    await targetWriter.WriteLineAsync($"[Личное сообщение от {nick}] {message}");
+                    await writer.WriteLineAsync($"[Личное сообщение к {targetNick}] {message}");
+                }
                 continue;
             }
             await BroadcastAsync($"[{DateTime.Now:HH:mm:ss}] {nick}: {line}");
@@ -73,7 +98,7 @@ async Task HandleClientAsync(TcpClient client)
     catch (IOException) { /* клиент оборвал соединение */ }
     finally
     {
-        lock (lockObj) clients.Remove(writer);
+        lock (lockObj) clients.Remove(nick);
         client.Close();
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss}] {nick} отключился");
         await BroadcastAsync($"*** {nick} покинул чат ***");
@@ -83,7 +108,7 @@ async Task HandleClientAsync(TcpClient client)
 async Task BroadcastAsync(string message)
 {
     List<StreamWriter> snapshot;
-    lock (lockObj) snapshot = clients.ToList();
+    lock (lockObj) snapshot = clients.Values.ToList();
 
     foreach (var w in snapshot)
     {
