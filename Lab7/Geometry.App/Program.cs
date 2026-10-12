@@ -1,4 +1,5 @@
-﻿using Geometry.Core;
+﻿using ConsoleTables;
+using Geometry.Core;
 
 var collection = new ShapeCollection();
 var storage = new FileResultStorage("results.txt");
@@ -29,6 +30,13 @@ while (true)
             manager.AddAndSave(new Trapezoid(double.Parse(tr[0]), double.Parse(tr[1]), double.Parse(tr[2])));
             break;
         case "5":
+            var table = new ConsoleTable("Фигура", "Площадь", "Периметр");
+            foreach (var s in collection.Shapes)
+            {
+                table.AddRow(s.GetType().Name, $"{s.Area():F2}", $"{s.Perimeter():F2}");
+            }
+            table.Write();
+            Console.WriteLine($"Итого: {collection.TotalArea():F2}");
             manager.ReportAndSave();
             break;
         case "0": return;
